@@ -60,6 +60,7 @@ textarea.fi{resize:vertical;min-height:52px;line-height:1.4;}
 .att-row{display:grid;grid-template-columns:1fr 1fr auto auto auto;gap:6px;margin-bottom:6px;align-items:center;}
 .sta-btn{padding:4px 8px;border-radius:4px;border:1px solid var(--border);background:var(--cream);font-size:11px;font-weight:600;cursor:pointer;color:var(--muted);transition:all .15s;white-space:nowrap;}
 .sta-btn.P{background:#E8F5ED;color:var(--success);border-color:#A8D5B5;}
+.sta-btn.PS{background:#D4EDDA;color:#155724;border-color:#8FB99A;}
 .sta-btn.E{background:#FFF8E1;color:#B45309;border-color:#F5D88A;}
 .sta-btn.A{background:#FDECEA;color:var(--danger);border-color:#F5BBBA;}
 .rm{background:none;border:none;cursor:pointer;color:var(--muted);font-size:16px;padding:2px 4px;line-height:1;}
@@ -292,9 +293,10 @@ function renderAttendance(){
       <input class="fi" value="${esc(a.name)}" placeholder="Full Name" oninput="attendees[${i}].name=this.value;updatePreview()">
       <input class="fi" value="${esc(a.role)}" placeholder="Designation / Role" oninput="attendees[${i}].role=this.value;updatePreview()">
       <div style="display:flex;gap:3px;">
-        <button class="sta-btn ${a.status==='P'?'P':''}" onclick="setSta(${i},'P',this)">P</button>
-        <button class="sta-btn ${a.status==='E'?'E':''}" onclick="setSta(${i},'E',this)">E</button>
-        <button class="sta-btn ${a.status==='A'?'A':''}" onclick="setSta(${i},'A',this)">A</button>
+        <button class="sta-btn ${a.status==='P'?'P':''}" onclick="setSta(${i},'P',this)" title="Present">P</button>
+        <button class="sta-btn ${a.status==='PS'?'PS':''}" onclick="setSta(${i},'PS',this)" title="Present less than 50%">P*</button>
+        <button class="sta-btn ${a.status==='E'?'E':''}" onclick="setSta(${i},'E',this)" title="Excused">E</button>
+        <button class="sta-btn ${a.status==='A'?'A':''}" onclick="setSta(${i},'A',this)" title="Abstained">A</button>
       </div>
       <button class="rm" onclick="attendees.splice(${i},1);renderAttendance()" title="Remove">×</button>`;
     list.appendChild(row);
@@ -310,9 +312,10 @@ function setSta(i,s,btn){
 }
 function updateBadges(){
   const p=attendees.filter(a=>a.status==='P').length;
+  const ps=attendees.filter(a=>a.status==='PS').length;
   const e=attendees.filter(a=>a.status==='E').length;
   const ab=attendees.filter(a=>a.status==='A').length;
-  document.getElementById('badge-p').textContent=p+' P';
+  document.getElementById('badge-p').textContent=p+(ps?' / '+ps+' P*':'')+ ' P';
   document.getElementById('badge-e').textContent=e+' E';
   document.getElementById('badge-a').textContent=ab+' A';
 }
@@ -488,15 +491,17 @@ function agendaHtml(){
 
 function attendanceHtml(LOGO,inst,meetNo,type){
   if(!attendees.length)return'';
-  const rows=attendees.map((a,i)=>`<tr><td>${i+1}</td><td>${esc(a.name)||'—'}</td><td>${esc(a.role)||'—'}</td><td class="${a.status==='P'?'sp':a.status==='A'?'sa':'se'}">${a.status}</td></tr>`).join('');
+  const rows=attendees.map((a,i)=>`<tr><td>${i+1}</td><td>${esc(a.name)||'—'}</td><td>${esc(a.role)||'—'}</td><td class="${a.status==='P'?'sp':a.status==='PS'?'sp':a.status==='A'?'sa':'se'}">${a.status==='PS'?'P*':a.status}</td></tr>`).join('');
   const p=attendees.filter(a=>a.status==='P').length;
+  const ps=attendees.filter(a=>a.status==='PS').length;
   const e=attendees.filter(a=>a.status==='E').length;
   const ab=attendees.filter(a=>a.status==='A').length;
   return `<div class="page">
     ${kuHeader(LOGO)}
     <p class="sec-label">${meetNo} Meeting of the ${esc(type)} — Attendance</p>
     <table><thead><tr><th style="width:24pt">#</th><th>Name</th><th>Designation / Role</th><th style="width:36pt">Status</th></tr></thead>
-    <tbody>${rows}<tr class="summary-row"><td colspan="2"><b>Summary</b></td><td>P:${p} E:${e} A:${ab}</td><td>Total:${attendees.length}</td></tr></tbody></table>
+    <tbody>${rows}<tr class="summary-row"><td colspan="2"><b>Summary</b></td><td>P:${p} P*:${ps} E:${e} A:${ab}</td><td>Total:${attendees.length}</td></tr></tbody></table>
+    <p style="font-size:8.5pt;color:#666;margin-top:8pt;">P – Present &nbsp;|&nbsp; P* – Present less than 50% of the time &nbsp;|&nbsp; E – Excused &nbsp;|&nbsp; A – Abstained</p>
   </div>`;
 }
 
@@ -746,6 +751,62 @@ function clearAll(){
   renderAgenda();
   minCtr=1;minutesItems=[{id:2,sectionCode:'X.1',title:'Matters Arising from the Minutes of the Previous Meeting',subItems:[{text:'Example minute item.',resp:'Responsible Person'}]}];
   renderMinutes();
+
+  // Default attendance list from 34th Faculty Board Minutes
+  const defaultAttendees = [
+    {name:'Dr. Madhawa Herath', role:'Chairperson'},
+    {name:'Prof. Sujeewa Kodithuwakku', role:'Academic Staff'},
+    {name:'Prof. Maduranga Kulathunga', role:'Academic Staff'},
+    {name:'Dr. Janaka Alawatugoda', role:'Academic Staff'},
+    {name:'Ms. Buddhika Suraweera', role:'Academic Staff'},
+    {name:'Ms. Oshani Dissanayake', role:'Academic Staff'},
+    {name:'Ms. Erandi De Silva', role:'Academic Staff'},
+    {name:'Ms. Menaka Moonamaldeniya', role:'Academic Staff'},
+    {name:'Ms. Gihani Gunarathne', role:'Academic Staff'},
+    {name:'Ms. Chathuni Thilakarathne', role:'Academic Staff'},
+    {name:'Ms. Anuththara Ekanayake', role:'Academic Staff'},
+    {name:'Ms. Chamitha Rathnayake', role:'Academic Staff'},
+    {name:'Ms. Dinu Ehelapitiya', role:'Academic Staff'},
+    {name:'Ms. Rashmika Perera', role:'Academic Staff'},
+    {name:'Mr. Vindana Mallikarachchi', role:'Academic Staff'},
+    {name:'Mr. Chamod Kodithuwakku', role:'Academic Staff'},
+    {name:'Ms. Yamuna Wickramasinghe', role:'Academic Staff'},
+    {name:'Ms. Nilusha Ariyasena', role:'Academic Staff'},
+    {name:'Ms. Chaumika Ragunathan', role:'Academic Staff'},
+    {name:'Ms. Lakshima Mahnayake', role:'Academic Staff'},
+    {name:'Ms. Shanika Abeysinghe', role:'Academic Staff'},
+    {name:'Ms. Chathurika Koswatte', role:'Academic Staff'},
+    {name:'Mr. Ashara Abeywardana', role:'Academic Staff'},
+    {name:'Ms. Kaushalya Jayasinghe', role:'Academic Staff'},
+    {name:'Ms. Vihangi Yasuththara', role:'Academic Staff'},
+    {name:'Mr. Gayan Dissanayake', role:'Academic Staff'},
+    {name:'Mr. Suresh Dissanayake', role:'Academic Staff'},
+    {name:'Ms. Dinusha Premasiri', role:'Academic Staff'},
+    {name:'Ms. Rashmika Wayangi', role:'Academic Staff'},
+    {name:'Ms. Sanduni Ratnapriya', role:'Academic Staff'},
+    {name:'Ms. Anjali Kiriella', role:'Academic Staff'},
+    {name:'Ms. Oshadhi Keerthisinghe', role:'Academic Staff'},
+    {name:'Ms. Nadeeshani Madushika', role:'Academic Staff'},
+    {name:'Mr. Sanjeewa Rathnayake', role:'Academic Staff'},
+    {name:'Ms. Sathsarani Samarakoon', role:'Academic Staff'},
+    {name:'Ms. Deshani Kulathunga', role:'Academic Staff'},
+    {name:'Ms. Kaushalya Premarathne', role:'Academic Staff'},
+    {name:'Ms. Shashini Bulumulla', role:'Academic Staff'},
+    {name:'Ms. Sonali Jayarathne', role:'Academic Staff'},
+    {name:'Ms. Hiroshika Kumari', role:'Academic Staff'},
+    {name:'Mr. Sasanka Ranasinghe', role:'Academic Staff'},
+    {name:'Mr. Chaminda Jayasinghe', role:'Academic Staff'},
+    {name:'Ms. Kavindya Wijethilaka', role:'Academic Staff'},
+    {name:'Ms. Umesha Rathnayaka', role:'Academic Staff'},
+    {name:'Ms. Ayodya Herath', role:'Academic Staff'},
+    {name:'Ms. Maheshi Jayasinghe', role:'Academic Staff'},
+    {name:'Ms. Sawbhagya Bandara', role:'Academic Staff'},
+    {name:'Ms. Dilmi Dehigolla', role:'Academic Staff'},
+    {name:'Ms. Lakshani Samarakoon', role:'Academic Staff'},
+  ];
+  defaultAttendees.forEach(a => {
+    attendees.push({id: Date.now()+Math.random(), name:a.name, role:a.role, status:'P'});
+  });
   renderAttendance();
   updatePreview();
 })();
