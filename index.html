@@ -282,8 +282,8 @@ function g(id){const e=document.getElementById(id);return e?e.value:'';}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/\n/g,'<br>');}
 function getMeetNum(){return g('meta-no').replace(/[^0-9]/g,'')||'X';}
 function ordSup(d){const v=d%100;const s=['th','st','nd','rd'];return d+(s[(v-20)%10]||s[v]||s[0]);}
-function fmtDateSup(val){if(!val)return'';const dt=new Date(val+'T00:00:00');const ms=['January','February','March','April','May','June','July','August','September','October','November','December'];return ordSup(dt.getDate())+'<sup>'+(()=>{const v=dt.getDate()%100;const s=['th','st','nd','rd'];return s[(v-20)%10]||s[v]||s[0];})()+'</sup> of '+ms[dt.getMonth()]+' '+dt.getFullYear();}
-function fmtDatePlain(val){
+function fmtDateSup(val){if(!val)return'';const dt=new Date(val+'T00:00:00');const ms=['January','February','March','April','May','June','July','August','September','October','November','December'];const d=dt.getDate();const v=d%100;const sx=['th','st','nd','rd'];const sfx=sx[(v-20)%10]||sx[v]||sx[0];return d+'<sup>'+sfx+'</sup> of '+ms[dt.getMonth()]+' '+dt.getFullYear();}
+  function fmtDatePlain(val){
   if(!val)return'';
   const dt=new Date(val+'T00:00:00');
   const ms=['January','February','March','April','May','June','July','August','September','October','November','December'];
