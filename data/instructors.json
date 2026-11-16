@@ -23,21 +23,21 @@
   {
     "id": "i4",
     "name": "Sanduni Rathnapriya",
-    "email": "sanduni.r@kandyuni.lk",
+    "email": "sanduni.ra@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
   {
     "id": "i5",
     "name": "Wayangi Kalupahana",
-    "email": "wayangi.k@kandyuni.lk",
+    "email": "rashmika.k@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
   {
     "id": "i6",
     "name": "Oshadi Senevirathna",
-    "email": "oshadi.s@kandyuni.lk",
+    "email": "oshadhi.s@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
@@ -51,7 +51,7 @@
   {
     "id": "i8",
     "name": "Hiroshika Marassana",
-    "email": "hiroshika.m@kandyuni.lk",
+    "email": "hiroshika.k@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
@@ -65,7 +65,7 @@
   {
     "id": "i10",
     "name": "Sawbhaggya Bandara",
-    "email": "sawbhaggya.b@kandyuni.lk",
+    "email": "sawbhagya.b@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
@@ -86,7 +86,7 @@
   {
     "id": "i13",
     "name": "Maheshi Jayasinghe",
-    "email": "maheshi.j@kandyuni.lk",
+    "email": "rasadhika.j@kandyuni.lk",
     "dept": "Department of Computing",
     "role": "instructor"
   },
